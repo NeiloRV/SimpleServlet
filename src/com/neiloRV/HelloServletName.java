@@ -10,12 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 public class HelloServletName extends HttpServlet {
 
-	String name;
-	ArrayList<String> names = new ArrayList();
+	private ArrayList<String> names = new ArrayList<String>();
 
 	private String getAllNames() {
 		String responseCode = "";
-
 		for (int i = 0; i < names.size(); i++) {
 			responseCode = responseCode + names.get(i) + "<br>";
 		}
@@ -24,17 +22,24 @@ public class HelloServletName extends HttpServlet {
 
 	private boolean findNameInList(String newName) {
 		for (int i = 0; i < names.size(); i++) {
-			if (newName.equals(names.get(i))) {
+			if (newName.equalsIgnoreCase(names.get(i))) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	private String makeCorrectSpelling(String name) {
+		String firstletter = (name.substring(0, 1)).toUpperCase();
+		String otherLetter = (name.substring(1, name.length() - 1)).toLowerCase();
+		String correctNameSpelling = firstletter + otherLetter;
+		return correctNameSpelling;
+	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		name = request.getParameter("name");
+		String name = request.getParameter("name");
 
 		if (findNameInList(name)) {
 			response.setContentType("text/html");
@@ -43,7 +48,8 @@ public class HelloServletName extends HttpServlet {
 					+ "Full list: " + getAllNames() + "</h1>");
 
 		} else {
-			names.add(names.size(), name);
+			String correctNameSpelling = makeCorrectSpelling(name);
+			names.add(names.size(), correctNameSpelling);
 			response.setContentType("text/html");
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.getWriter().println(
